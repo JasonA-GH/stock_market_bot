@@ -52,6 +52,7 @@ typedef struct bot_struct
     int* share_count;
     int strategy;
     double money;
+    double in_market;
 }Bot;
 
 Company* companies;
@@ -87,7 +88,7 @@ void print_bot(Bot* b)
         sc += b->share_count[i];
     }
     
-    printf("Number of companies: %d | Number of total shares: %d | Money: %lf\n", cc, sc, b->money);
+    printf("Number of companies: %d | Number of total shares: %d | Money: %lf | Money in market %lf\n", cc, sc, b->money, b->in_market);
 }
 
 void buy(Bot* b, int share, int count)
@@ -118,7 +119,8 @@ void init_bots()
         //bots[i].company_shares = malloc(sizeof(int)*100);
         bots[i].share_count = malloc(sizeof(int)*100);
         bots[i].strategy = rand()%1;
-        bots[i].money = rand()%1000;
+        bots[i].money = rand()%10000;
+        bots[i].in_market = 0;
     }
 }
 
@@ -139,24 +141,44 @@ void bot_update()
                     int val = 0;
                     if(count > 0)
                         val = rand()%count;
-                        printf("BUYING %d at %lf\n", val, companies[share].share_price*val);
+                        printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
                     buy(&(bots[i]), share, val);
                 }
                 else if(f == 1)
                 {
                     //int share = rand()%COMPANY_COUNT;
                     int share = 0;
-                    do
+                    int cc = 0;
+                    for(int j=0; j < COMPANY_COUNT; j++)
+                    {
+                        if(bots[i].share_count[j] > 0)
+                            cc++;
+                    }
+                    int toSell = 0;
+                    if(cc > 0)
+                        toSell = rand()%cc;
+                    /*do
                     {
                         if(bots[i].share_count[share] > 0)
                             break;
                         share++;
-                    }while(share < COMPANY_COUNT);
+                    }while(share < COMPANY_COUNT);*/
+                    int c = 0;
+                    for(int j=0; j < COMPANY_COUNT; j++)
+                    {
+                        if(bots[i].share_count[j] > 0)
+                        c++;
+                        if(c == cc)
+                        {
+                            share = j;
+                            break;
+                        }
+                    }
                     int count = bots[i].share_count[share];
                     int val = 0;
                     if(count > 0)
                         val = rand()%count;
-                        printf("SELLING %d at %lf\n", val, companies[share].share_price*val);
+                        printf("SELLING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
                     sell(&(bots[i]), share, val);
                 }
                 //else wait
@@ -168,6 +190,13 @@ void bot_update()
             }
             break;
         }
+        
+        double p = 0;
+        for(int j=0; j < COMPANY_COUNT; j++)
+        {
+            p += bots[i].share_count[j]*companies[j].share_price;
+        }
+        bots[i].in_market = p;
     }
 }
 
@@ -185,21 +214,24 @@ int main() {
     init_stock_market();
     
     init_bots();
-    
-    //for(int i=0; i < 15; i++)
     int c = 0;
-    while(1)
+    print_bot(&(bots[0]));
+    for(int i=0; i < 150; i++)
+    
+    //while(1)
     {
         do_tick();
     print_bot(&(bots[0]));
     sleep(1);
     c++;
-    if(bots[0].money >= 2000)
+    if(bots[0].money >= 20000)
     {
         printf("Only took %d\n", c);
         return 0;
     }
     }
+    
+    print_bot(&(bots[0]));
     
     
     //stock market bot
