@@ -130,8 +130,8 @@ void bot_update()
         {
             case 0: // RANDOM
             {
-                int f = rand()%2;
-                printf("%d\n", f);
+                int f = rand()%3;
+                //printf("%d\n", f);
                 if(f == 0)
                 {
                     int share = rand()%COMPANY_COUNT;
@@ -139,17 +139,27 @@ void bot_update()
                     int val = 0;
                     if(count > 0)
                         val = rand()%count;
+                        printf("BUYING %d at %lf\n", val, companies[share].share_price*val);
                     buy(&(bots[i]), share, val);
                 }
-                else
+                else if(f == 1)
                 {
-                    int share = rand()%COMPANY_COUNT;
+                    //int share = rand()%COMPANY_COUNT;
+                    int share = 0;
+                    do
+                    {
+                        if(bots[i].share_count[share] > 0)
+                            break;
+                        share++;
+                    }while(share < COMPANY_COUNT);
                     int count = bots[i].share_count[share];
                     int val = 0;
                     if(count > 0)
                         val = rand()%count;
+                        printf("SELLING %d at %lf\n", val, companies[share].share_price*val);
                     sell(&(bots[i]), share, val);
                 }
+                //else wait
             }
             break;
             case 1:
@@ -176,11 +186,19 @@ int main() {
     
     init_bots();
     
-    //for(int i=0; i < 100; i++)
+    //for(int i=0; i < 15; i++)
+    int c = 0;
+    while(1)
     {
+        do_tick();
     print_bot(&(bots[0]));
-    do_tick();
     sleep(1);
+    c++;
+    if(bots[0].money >= 2000)
+    {
+        printf("Only took %d\n", c);
+        return 0;
+    }
     }
     
     
