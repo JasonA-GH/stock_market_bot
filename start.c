@@ -308,9 +308,9 @@ int get_highest_bot()
     int ind = 0;
     for(int i=0; i < BOT_COUNT; i++)
     {
-        if(bots[i].money + bots[i].in_market > m)
+        if(bots[i].money  > m)
         {
-            m = bots[i].money + bots[i].in_market;
+            m = bots[i].money; //+ bots[i].in_market;
             ind = i;
         }
     }
@@ -340,7 +340,7 @@ int main() {
             do_tick();
     print_bot(&(bots[get_highest_bot()]));
     sleep(1);
-    if(bots[get_highest_bot()].money + bots[get_highest_bot()].in_market > 1000000)
+    if(bots[get_highest_bot()].money > 1000000)
     {
         //print_bot(&(bots[get_highest_bot()]));
         return 0;
