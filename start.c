@@ -107,8 +107,8 @@ void sell(Bot* b, int share, int count)
 {
     if(count == -1)
     {
+        b->money += companies[share].share_price*b->share_count[share];
         b->share_count[share] = 0;
-        b->money += companies[share].share_price*count;
     }
     else if(b->share_count[share] >= count)
     {
@@ -213,6 +213,7 @@ void bot_update()
                     {
                         sell(&(bots[i]), j, -1);
                     }
+                    printf("SELLING everything\n");
                     bots[i].invest = 0;
                 }
             }
