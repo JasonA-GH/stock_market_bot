@@ -5,7 +5,7 @@
 #include<unistd.h>
 
 #define COMPANY_COUNT 100
-#define BOT_COUNT 1
+#define BOT_COUNT 10
 
 double random_share_price()
 {
@@ -88,8 +88,13 @@ void print_bot(Bot* b)
             cc++;
         sc += b->share_count[i];
     }
-    
-    printf("C: %d | S: %d | $%lf | (in market) $%lf | I: %lf\n", cc, sc, b->money, b->in_market, b->invest);
+    int i = 0;
+    for(i =0; i < BOT_COUNT; i++)
+    {
+        if(&(bots[i]) == b)
+        break;
+    }
+    printf("Bot: %d | Str: %d | C: %d | S: %d | $%lf | (in market) $%lf | I: %lf\n", i, b->strategy, cc, sc, b->money, b->in_market, b->invest);
 }
 
 void buy(Bot* b, int share, int count)
@@ -124,7 +129,7 @@ void init_bots()
     {
         //bots[i].company_shares = malloc(sizeof(int)*100);
         bots[i].share_count = malloc(sizeof(int)*100);
-        bots[i].strategy = 3;
+        bots[i].strategy = rand()%4;
         bots[i].money = rand()%10000;
         bots[i].in_market = 0;
         bots[i].invest = 0;
@@ -150,6 +155,7 @@ void bot_update()
                         val = rand()%count;
                         //printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
                     buy(&(bots[i]), share, val);
+                    bots[i].invest += companies[share].share_price*val;
                 }
                 else if(f == 1)
                 {
@@ -187,6 +193,7 @@ void bot_update()
                         val = rand()%count;
                         //printf("SELLING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
                     sell(&(bots[i]), share, val);
+                    bots[i].invest -= companies[share].share_price*val;
                 }
                 //else wait
             }
@@ -262,11 +269,11 @@ void bot_update()
                     int val = 0;
                     if(count > 0)
                         val = rand()%count;
-                        printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
+                        //printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
                     buy(&(bots[i]), share, val);
                     bots[i].invest += companies[share].share_price*val;
                 }
-                if(bots[i].in_market*1.1 > bots[i].invest)
+                if(bots[i].in_market*1.1 >= bots[i].invest)
                 {
                     double most = 0;
                     int index = 0;
@@ -279,7 +286,7 @@ void bot_update()
                         }
                     }
                     sell(&(bots[i]), index, -1);
-                    printf("SELLING top\n");
+                    //printf("SELLING top\n");
                     bots[i].invest -= bots[i].share_count[index]*companies[index].share_price;
                 }
             }
@@ -293,6 +300,21 @@ void bot_update()
         }
         bots[i].in_market = p;
     }
+}
+
+int get_highest_bot()
+{
+    double m = 0;
+    int ind = 0;
+    for(int i=0; i < BOT_COUNT; i++)
+    {
+        if(bots[i].money + bots[i].in_market > m)
+        {
+            m = bots[i].money + bots[i].in_market;
+            ind = i;
+        }
+    }
+    return ind;
 }
 
 void do_tick()
@@ -309,24 +331,22 @@ int main() {
     init_stock_market();
     
     init_bots();
-    int c = 0;
-    print_bot(&(bots[0]));
+    //print_bot(&(bots[0]));
    //for(int i=0; i < 15; i++)
     
     while(1)
     {
         do_tick();
-    print_bot(&(bots[0]));
+    print_bot(&(bots[get_highest_bot()]));
     sleep(1);
-    c++;
-    if(bots[0].money >= 20000)
+    if(bots[get_highest_bot()].money + bots[get_highest_bot()].in_market > 50000)
     {
-        printf("Only took %d\n", c);
+        print_bot(&(bots[get_highest_bot()]));
         return 0;
     }
     }
     
-    print_bot(&(bots[0]));
+    //print_bot(&(bots[0]));
     
     
     //stock market bot
