@@ -53,6 +53,7 @@ typedef struct bot_struct
     int strategy;
     double money;
     double in_market;
+    double invest;
 }Bot;
 
 Company* companies;
@@ -104,7 +105,12 @@ void buy(Bot* b, int share, int count)
 
 void sell(Bot* b, int share, int count)
 {
-    if(b->share_count[share] >= count)
+    if(count == -1)
+    {
+        b->share_count[share] = 0;
+        b->money += companies[share].share_price*count;
+    }
+    else if(b->share_count[share] >= count)
     {
         b->share_count[share] -= count;
         b->money += companies[share].share_price*count;
@@ -118,9 +124,10 @@ void init_bots()
     {
         //bots[i].company_shares = malloc(sizeof(int)*100);
         bots[i].share_count = malloc(sizeof(int)*100);
-        bots[i].strategy = rand()%1;
+        bots[i].strategy = 1;
         bots[i].money = rand()%10000;
         bots[i].in_market = 0;
+        bots[i].invest = 0;
     }
 }
 
@@ -186,7 +193,28 @@ void bot_update()
             break;
             case 1:
             {
-                
+                //sell as soon as profit
+                int f = rand()%2;
+                //printf("%d\n", f);
+                if(f == 0)
+                {
+                    int share = rand()%COMPANY_COUNT;
+                    int count = floor(bots[i].money/companies[share].share_price);
+                    int val = 0;
+                    if(count > 0)
+                        val = rand()%count;
+                        printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
+                    buy(&(bots[i]), share, val);
+                    bots[i].invest += companies[share].share_price*val;
+                }
+                if(bots[i].in_market > bots[i].invest)
+                {
+                    for(int j=0; j < COMPANY_COUNT; j++)
+                    {
+                        sell(&(bots[i]), j, -1);
+                    }
+                    bots[i].invest = 0;
+                }
             }
             break;
         }
@@ -216,7 +244,7 @@ int main() {
     init_bots();
     int c = 0;
     print_bot(&(bots[0]));
-    for(int i=0; i < 150; i++)
+   for(int i=0; i < 15; i++)
     
     //while(1)
     {
