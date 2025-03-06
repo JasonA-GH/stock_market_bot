@@ -5,7 +5,7 @@
 #include<unistd.h>
 
 #define COMPANY_COUNT 100
-#define BOT_COUNT 10
+#define BOT_COUNT 50
 
 double random_share_price()
 {
@@ -336,12 +336,13 @@ int main() {
     
     while(1)
     {
-        do_tick();
+        for(int i=0; i < 100; i++)
+            do_tick();
     print_bot(&(bots[get_highest_bot()]));
     sleep(1);
-    if(bots[get_highest_bot()].money + bots[get_highest_bot()].in_market > 50000)
+    if(bots[get_highest_bot()].money + bots[get_highest_bot()].in_market > 1000000)
     {
-        print_bot(&(bots[get_highest_bot()]));
+        //print_bot(&(bots[get_highest_bot()]));
         return 0;
     }
     }
