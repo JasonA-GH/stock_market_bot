@@ -148,7 +148,7 @@ void bot_update()
                     int val = 0;
                     if(count > 0)
                         val = rand()%count;
-                        printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
+                        //printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
                     buy(&(bots[i]), share, val);
                 }
                 else if(f == 1)
@@ -185,7 +185,7 @@ void bot_update()
                     int val = 0;
                     if(count > 0)
                         val = rand()%count;
-                        printf("SELLING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
+                        //printf("SELLING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
                     sell(&(bots[i]), share, val);
                 }
                 //else wait
@@ -194,6 +194,32 @@ void bot_update()
             case 1:
             {
                 //sell as soon as profit
+                int f = rand()%2;
+                //printf("%d\n", f);
+                if(f == 0)
+                {
+                    int share = rand()%COMPANY_COUNT;
+                    int count = floor(bots[i].money/companies[share].share_price);
+                    int val = 0;
+                    if(count > 0)
+                        val = rand()%count;
+                        //printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
+                    buy(&(bots[i]), share, val);
+                    bots[i].invest += companies[share].share_price*val;
+                }
+                if(bots[i].in_market > bots[i].invest)
+                {
+                    for(int j=0; j < COMPANY_COUNT; j++)
+                    {
+                        sell(&(bots[i]), j, -1);
+                    }
+                    //printf("SELLING everything\n");
+                    bots[i].invest = 0;
+                }
+            }
+            break;
+            case 2:
+            {
                 int f = rand()%2;
                 //printf("%d\n", f);
                 if(f == 0)
@@ -245,9 +271,9 @@ int main() {
     init_bots();
     int c = 0;
     print_bot(&(bots[0]));
-   for(int i=0; i < 15; i++)
+   //for(int i=0; i < 15; i++)
     
-    //while(1)
+    while(1)
     {
         do_tick();
     print_bot(&(bots[0]));
