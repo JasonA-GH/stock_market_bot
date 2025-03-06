@@ -124,7 +124,7 @@ void init_bots()
     {
         //bots[i].company_shares = malloc(sizeof(int)*100);
         bots[i].share_count = malloc(sizeof(int)*100);
-        bots[i].strategy = 1;
+        bots[i].strategy = 2;
         bots[i].money = rand()%10000;
         bots[i].in_market = 0;
         bots[i].invest = 0;
@@ -235,12 +235,19 @@ void bot_update()
                 }
                 if(bots[i].in_market > bots[i].invest)
                 {
+                    double most = 0;
+                    int index = 0;
                     for(int j=0; j < COMPANY_COUNT; j++)
                     {
-                        sell(&(bots[i]), j, -1);
+                        if(bots[i].share_count[j] > most)
+                        {
+                            most = bots[i].share_count[j];
+                            index = j;
+                        }
                     }
-                    printf("SELLING everything\n");
-                    bots[i].invest = 0;
+                    sell(&(bots[i]), index, -1);
+                    printf("SELLING top\n");
+                    bots[i].invest -= bots[i].share_count[index]*companies[index].share_price;
                 }
             }
             break;
