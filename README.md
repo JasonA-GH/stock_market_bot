@@ -1,4 +1,5 @@
 Strategies:
+
 1: Random    | Randomly buys and sells
 
 2: Profits   | Buys randomly but sells only when total money in the market is greater than total investment
