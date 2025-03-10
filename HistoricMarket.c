@@ -5,10 +5,49 @@
 #include<unistd.h>
 #include <string.h>
 
-#define COMPANY_COUNT 34
+#define COMPANY_COUNT 33
 #define BOT_COUNT 50
 
+unsigned long long year;
+unsigned long long month;
+unsigned long long day;
 
+char stocks_to_init[][COMPANY_COUNT] = {
+  "aal_us_d.csv",
+  "aapl_us_d.csv",
+  "amd_us_d.csv",
+  "amzn_us_d.csv",
+  "avgo_us_d.csv",
+  "cost_us_d.csv",
+  "f_us_d.csv",
+  "ge_us_d.csv",
+  "googl_us_d.csv",
+  "hd_us_d.csv",
+  "ibm_us_d.csv",
+  "intc_us_d.csv",
+  "jnj_us_d.csv",
+  "jpm_us_d.csv",
+  "ko_us_d.csv",
+  "mcd_us_d.csv",
+  "meta_us_d.csv",
+  "msft_us_d.csv",
+  "nflx_us_d.csv",
+  "nio_us_d.csv",
+  "nvda_us_d.csv",
+  "orcl_us_d.csv",
+  "pep_us_d.csv",
+  "pypl_us_d.csv",
+  "qcom_us_d.csv",
+  "ry_us_d.csv",
+  "spgi_us_d.csv",
+  "^spx_d.csv",
+  "tm_us_d.csv",
+  "tsla_us_d.csv",
+  "tsm_us_d.csv",
+  "txn_us_d.csv",
+  "v_us_d.csv",
+  "wmt_us_d.csv",
+};
 
 double random_share_price()
 {
@@ -17,14 +56,18 @@ double random_share_price()
 
 typedef struct date_struct
 {
+  //unsigned long long day;
+  unsigned long long year;
+  unsigned long long month;
   unsigned long long day;
 }Date;
 
 typedef struct company_struct
 {
   char* name;
-    double share_price;
+  double share_price;
   Date* dates;
+  unsigned long long last_date;
     
 }Company;
 
@@ -69,12 +112,15 @@ unsigned long long month_count(unsigned long long m)
     case 1:
       return 28;
       break;
+    default:
+      return 30;
     }
+  return -1;
 }
 
 unsigned long long convert_date(char* d)
 {
-  char year[5];
+  /*char year[5];
   char month[3];
   char day[3];
 
@@ -91,7 +137,30 @@ unsigned long long convert_date(char* d)
   int m = atoi(month);
   int d = atoi(day);
 
-  return year_count(y) + month_count(m) + d;
+  return year_count(y) + month_count(m) + d;*/
+}
+
+void copy_name(int i, char name[])
+{
+  companies[i].name = malloc(sizeof(char)*6);
+  char* t = malloc(sizeof(char)*6);
+  for(int i=0; i < 50; i++)
+    {
+      if(name[i] == '_')
+	break;
+      t[i] = name[i];
+    }
+
+  t[5] = '\0';
+  strncpy(companies[i].name, t, 6);
+}
+
+void init_stock(int i, char file[])
+{
+  copy_name(i, file);
+
+  //init dates
+  //init stock prices at dates?
 }
 
 void init_stock_market()
@@ -100,6 +169,11 @@ void init_stock_market()
     
     for(int i=0; i < COMPANY_COUNT; i++)
     {
+      //Get name from csv
+      //copy_name(i, stocks_to_init[i]);
+
+      init_stock(i, stocks_to_init[i]);
+      
       //companies[i].share_price = rand()%100;
       //companies[i].direction = rand()%2*2-1;
     }
@@ -361,10 +435,6 @@ void do_tick()
 int main() {
 
     srand(time(NULL));
-
-    char* f = malloc(sizeof(char)*11);
-    f = "1984-09-07";
-    convert_date(f);
     
     init_stock_market();
     
