@@ -12,7 +12,7 @@ double random_share_price()
     return (double)rand()/(double)RAND_MAX;
 }
 
-double get_direction(int dir)
+double get_direction()
 {
     int d = rand()%100;
     int m = 0;
@@ -35,6 +35,11 @@ double get_direction(int dir)
     else
     {
         m = 50;
+    }
+    int dir = 1;
+    if(rand()%2 == 0)
+    {
+        dir = -1;
     }
     return m*dir;
 }
@@ -74,7 +79,7 @@ void stock_market_update()
 {
     for(int i=0; i < COMPANY_COUNT; i++)
     {
-        companies[i].share_price += random_share_price()*get_direction(companies[i].direction);
+        companies[i].share_price += random_share_price()*get_direction();
     }
 }
 
