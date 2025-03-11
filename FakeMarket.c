@@ -80,6 +80,10 @@ void stock_market_update()
     for(int i=0; i < COMPANY_COUNT; i++)
     {
         companies[i].share_price += random_share_price()*get_direction();
+        if(companies[i].share_price < 0)
+        {
+            companies[i].share_price = 0;
+        }
     }
 }
 
