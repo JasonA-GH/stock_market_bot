@@ -5,7 +5,7 @@
 #include<unistd.h>
 
 #define COMPANY_COUNT 100
-#define BOT_COUNT 50
+#define BOT_COUNT 10
 #define STRAT_COUNT 5
 
 double random_share_price()
@@ -391,7 +391,7 @@ int main() {
     
     while(1)
     {
-        for(int i=0; i < 100; i++)
+        //for(int i=0; i < 100; i++)
             do_tick();
     print_bot(&(bots[get_highest_bot()]));
     sleep(1);
@@ -400,6 +400,12 @@ int main() {
         //print_bot(&(bots[get_highest_bot()]));
         return 0;
     }
+    }
+    printf("----------------------------------------------------------------------------\n");
+    
+    for(int i=0; i < BOT_COUNT; i++)
+    {
+        print_bot(&(bots[i]));
     }
     
     //print_bot(&(bots[0]));
