@@ -6,6 +6,7 @@
 
 #define COMPANY_COUNT 100
 #define BOT_COUNT 50
+#define STRAT_COUNT 5
 
 double random_share_price()
 {
@@ -138,7 +139,7 @@ void init_bots()
     {
         //bots[i].company_shares = malloc(sizeof(int)*100);
         bots[i].share_count = malloc(sizeof(int)*100);
-        bots[i].strategy = rand()%4;
+        bots[i].strategy = rand()%STRAT_COUNT;
         bots[i].money = 10000;
         bots[i].in_market = 0;
         bots[i].invest = 0;
@@ -274,6 +275,51 @@ void bot_update()
                 if(f == 0)
                 {
                     int share = rand()%COMPANY_COUNT;
+                    int count = floor(bots[i].money/companies[share].share_price);
+                    int val = 0;
+                    if(count > 0)
+                        val = rand()%count;
+                        //printf("BUYING %d at %lf for %lf\n", val, companies[share].share_price, companies[share].share_price*val);
+                    buy(&(bots[i]), share, val);
+                    bots[i].invest += companies[share].share_price*val;
+                }
+                if(bots[i].in_market*1.1 >= bots[i].invest)
+                {
+                    double most = 0;
+                    int index = 0;
+                    for(int j=0; j < COMPANY_COUNT; j++)
+                    {
+                        if(bots[i].share_count[j] > most)
+                        {
+                            most = bots[i].share_count[j];
+                            index = j;
+                        }
+                    }
+                    sell(&(bots[i]), index, -1);
+                    //printf("SELLING top\n");
+                    bots[i].invest -= bots[i].share_count[index]*companies[index].share_price;
+                }
+            }
+            break;
+            case 4:
+            {
+                int f = rand()%2;
+                //printf("%d\n", f);
+                if(f == 0)
+                {
+                    //find cheapest share price
+                    //buy as many
+                    int lowest = 10000;
+                    int comp = 0;
+                    for(int j=0; j < COMPANY_COUNT; j++)
+                    {
+                        if(companies[j].share_price < lowest)
+                        {
+                            lowest = companies[j].share_price;
+                            comp = j;
+                        }
+                    }
+                    int share = comp;
                     int count = floor(bots[i].money/companies[share].share_price);
                     int val = 0;
                     if(count > 0)
