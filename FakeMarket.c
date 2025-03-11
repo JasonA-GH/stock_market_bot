@@ -130,7 +130,7 @@ void init_bots()
         //bots[i].company_shares = malloc(sizeof(int)*100);
         bots[i].share_count = malloc(sizeof(int)*100);
         bots[i].strategy = rand()%4;
-        bots[i].money = rand()%10000;
+        bots[i].money = 10000;
         bots[i].in_market = 0;
         bots[i].invest = 0;
     }
@@ -308,7 +308,7 @@ int get_highest_bot()
     int ind = 0;
     for(int i=0; i < BOT_COUNT; i++)
     {
-        if(bots[i].money  > m)
+        if(bots[i].money > m)
         {
             m = bots[i].money; //+ bots[i].in_market;
             ind = i;
