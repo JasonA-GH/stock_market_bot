@@ -7,3 +7,5 @@ Strategies:
 3: Profits 2 | Buys randomly but sells only the largest money making shares when total money in the market is greater than total investment
 
 4: Profits 3 | Buys randomly but sells only the largest money making shares when total money in the market is greater than total investment by 10%
+
+5: Quantity  | Buys as many shares of the cheapest company and sells only when the total money in the market is greater than total investment by 10%
